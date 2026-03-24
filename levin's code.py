@@ -14,7 +14,7 @@ def get_info(path, is_acce=False, axis='x'):
     if is_acce:
         moveX = df[f'Linear Acceleration {axis} (m/s^2)'].tolist()[500:-500]
     else:
-        moveX = df['Gyroscope x (rad/s)'].tolist()[500:-500]
+        moveX = df[f'Gyroscope {axis} (rad/s)'].tolist()[500:-500]
     time = df['Time (s)'].tolist()[500:-500]
 
     print("\n")
@@ -55,4 +55,4 @@ def get_info(path, is_acce=False, axis='x'):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-get_info("exp_data/sound_150.xls",axis="z")
+get_info("exp_data/150_another.xls",axis="y")
