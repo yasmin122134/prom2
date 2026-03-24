@@ -74,6 +74,16 @@ def find_hot(abs_arr,cold_thresh, window=5):
             hot.append(i)
     return hot
 
+
+def find_hot2(abs_arr,cold_thresh):
+    hot = []
+    for j in range(0, np.shape(abs_arr)[0]):
+        a = abs_arr[j]
+        if a >= cold_thresh:
+            hot.append(j)
+    return hot
+
+
 potential_bits = [150, 155, 160, 165, 170, 175, 180, 185, 190, 195]
 THRESH = 2
 def get_bits(f, t, Zxx):
@@ -81,7 +91,10 @@ def get_bits(f, t, Zxx):
     COLD_THRESH = find_threshold(np.abs(Zxx))
     # hot columns
     abs_arr = np.abs(Zxx)
+    avg_abs_arr = np.mean(abs_arr,axis=1)
     hot = find_hot(abs_arr, COLD_THRESH)
+    cold_thresh = find_threshold(avg_abs_arr)
+    hot = find_hot2(avg_abs_arr, cold_thresh)
     for bit in potential_bits:
         for h in hot:
             if np.abs(f[h] - bit) <= THRESH:
@@ -110,4 +123,4 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-get_info("exp_data/sound_150.xls")
+get_info("exp_data/sound150-185.xls")
