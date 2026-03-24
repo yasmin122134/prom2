@@ -5,7 +5,21 @@ import numpy as np
 from scipy.signal import stft
 
 
-def get_info(path, is_acce=False, axis='x'):
+def get_info(path, is_acce=False):
+    axises = ['x', 'y', 'z']
+    bits = []
+    for axis in axises:
+        cur_bits = extract_data(path, is_acce=is_acce, axis=axis)
+        for bit in cur_bits:
+            if bit not in bits:
+                bits.append(bit)
+    print("the bits detedted are: ", bits)
+    return bits
+
+
+
+
+def extract_data(path, is_acce=False, axis='x'):
     if path.endswith('.csv'):
         df = pd.read_csv(path)
     else:
@@ -16,7 +30,11 @@ def get_info(path, is_acce=False, axis='x'):
     else:
         moveX = df[f'Gyroscope {axis} (rad/s)'].tolist()[500:-500]
     time = df['Time (s)'].tolist()[500:-500]
+    message = f'{path}, FFT, axis={axis}'
+    f, t, Zxx = calc_FFT(time, moveX,message)
+    return get_bits(f, t, Zxx)
 
+def calc_FFT(time, moveX, message):
     print("\n")
     print("Avarage:" , np.mean(moveX))
     print("Max:" , np.max(moveX))
@@ -28,16 +46,53 @@ def get_info(path, is_acce=False, axis='x'):
     print("samples rate:", SAMPLE_RATE)
 
     f, t, Zxx = stft(moveX, fs=SAMPLE_RATE, nperseg=256)
-
-    plt.plot(time, moveX)
-    plt.title(f'{path}, before FFT, axis={axis}')
-    plt.show()
-
     plt.pcolormesh(t, f, np.abs(Zxx), shading='gouraud')
     plt.ylabel('Hz')
     plt.xlabel('Sec')
-    plt.title(f'{path}, FFT, axis={axis}')
+    plt.title(message)
     plt.show()
+    return f, t, Zxx
+
+
+COLD_THRESH = 0.0009
+def find_threshold(arr):
+    max_val = np.max(arr)
+    min_val = np.min(arr)
+    threshold = (max_val + min_val) / 2
+    return threshold
+
+def find_hot(abs_arr,cold_thresh, window=5):
+    x = []
+    ind = []
+    for j in range(0, np.shape(abs_arr)[0]):
+        a = abs_arr[j][window]
+        x.append(a)
+        ind.append(j)
+    hot = []
+    for i in range(0, np.size(x)):
+        if x[i] >= cold_thresh:
+            hot.append(i)
+    return hot
+
+potential_bits = [150, 155, 160, 165, 170, 175, 180, 185, 190, 195]
+THRESH = 2
+def get_bits(f, t, Zxx):
+    found_bits = []
+    COLD_THRESH = find_threshold(np.abs(Zxx))
+    # hot columns
+    abs_arr = np.abs(Zxx)
+    hot = find_hot(abs_arr, COLD_THRESH)
+    for bit in potential_bits:
+        for h in hot:
+            if np.abs(f[h] - bit) <= THRESH:
+                found_bits.append(bit)
+                break
+
+    print(found_bits)
+    return found_bits
+
+
+
 
 
 # get_info("exp_data/no_sound_1.csv")
@@ -55,4 +110,4 @@ def get_info(path, is_acce=False, axis='x'):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-get_info("exp_data/150_another.xls",axis="y")
+get_info("exp_data/sound_150.xls")
