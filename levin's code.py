@@ -4,6 +4,14 @@ from matplotlib import pyplot as plt
 import numpy as np
 from scipy.signal import stft
 
+# COLD_THRESH = 0.0001
+jump_size = 3
+potential_bits = []
+for i in range(0,205,jump_size):
+    potential_bits.append(i)
+print("potential bits:", potential_bits)
+# potential_bits = [150, 155, 160, 165, 170, 175, 180, 185, 190, 195]
+THRESH = 1.5
 
 def get_info(path, is_acce=False):
     axises = ['x', 'y', 'z']
@@ -65,7 +73,6 @@ def calc_FFT(time, moveX, message):
     return f, t, Zxx
 
 
-COLD_THRESH = 0.0009
 def find_threshold(arr):
     max_val = np.max(arr)
     min_val = np.min(arr)
@@ -95,8 +102,6 @@ def find_hot2(abs_arr,cold_thresh):
     return hot
 
 
-potential_bits = [150, 155, 160, 165, 170, 175, 180, 185, 190, 195]
-THRESH = 2
 def get_bits(f, t, Zxx):
     found_bits = []
     COLD_THRESH = find_threshold(np.abs(Zxx))
@@ -135,4 +140,4 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-get_info("exp_data/152.xls")
+extract_data("exp_data/152.xls", axis="y")
