@@ -5,13 +5,13 @@ import numpy as np
 from scipy.signal import stft
 
 # COLD_THRESH = 0.0001
-jump_size = 3
+jump_size = 1
 potential_bits = []
 for i in range(0,205,jump_size):
     potential_bits.append(i)
 print("potential bits:", potential_bits)
 # potential_bits = [150, 155, 160, 165, 170, 175, 180, 185, 190, 195]
-THRESH = 1.5
+THRESH = 0.5
 
 def get_info(path, is_acce=False):
     axises = ['x', 'y', 'z']
