@@ -29,9 +29,9 @@ def get_info(path, is_acce=False, axis='x'):
 
     f, t, Zxx = stft(moveX, fs=SAMPLE_RATE, nperseg=256)
 
-    plt.plot(time, moveX)
-    plt.title(f'{path}, before FFT, axis={axis}')
-    plt.show()
+    # plt.plot(time, moveX)
+    # plt.title(f'{path}, before FFT, axis={axis}')
+    # plt.show()
 
     plt.pcolormesh(t, f, np.abs(Zxx), shading='gouraud')
     plt.ylabel('Hz')
@@ -45,7 +45,7 @@ def get_info(path, is_acce=False, axis='x'):
 # get_info("exp_data/sound_500.csv")
 # get_info("exp_data/sound_15000.csv")
 # get_info("exp_data/zzz.csv")
-# get_info("exp_data/zzz2.csv")
+# get_info("exp_data/zzz2.csv")m
 # get_info("exp_data/zzz3.xlsx")
 # get_info("exp_data/aaa.xls")
 # get_info("exp_data/sound_80.xls")
@@ -55,4 +55,4 @@ def get_info(path, is_acce=False, axis='x'):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-get_info("exp_data/150_another.xls",axis="y")
+get_info("exp_data/sound_120_again.xls", axis="y")
