@@ -45,7 +45,18 @@ def calc_FFT(time, moveX, message):
     SAMPLE_RATE = N_SAMPLE / DURATOIN
     print("samples rate:", SAMPLE_RATE)
 
+
+    yf = rfft(moveX)
+    xf = rfftfreq(N_SAMPLE, 1/SAMPLE_RATE)
+
+    plt.plot(xf, np.abs(yf))
+    plt.xlabel('Hrz')
+    plt.ylabel('Amplitude')
+    plt.title(message)
+    plt.show()
+
     f, t, Zxx = stft(moveX, fs=SAMPLE_RATE, nperseg=256)
+    print("Zxx size\n",np.size(Zxx), "\n")
     plt.pcolormesh(t, f, np.abs(Zxx), shading='gouraud')
     plt.ylabel('Hz')
     plt.xlabel('Sec')
@@ -95,6 +106,7 @@ def get_bits(f, t, Zxx):
     hot = find_hot(abs_arr, COLD_THRESH)
     cold_thresh = find_threshold(avg_abs_arr)
     hot = find_hot2(avg_abs_arr, cold_thresh)
+    print("hot frequencies:", hot, "\n")
     for bit in potential_bits:
         for h in hot:
             if np.abs(f[h] - bit) <= THRESH:
@@ -123,4 +135,4 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-get_info("exp_data/21_sounds.xls")
+get_info("exp_data/152.xls")
