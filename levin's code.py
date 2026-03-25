@@ -140,5 +140,4 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-extract_data("exp_data/152.xls", axis="y")
-print(151.77326587 - 153.32197266)
+get_info("exp_data/100JBL.xls")
