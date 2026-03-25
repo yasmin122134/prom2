@@ -123,4 +123,4 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-get_info("exp_data/sound150-185.xls")
+get_info("exp_data/21_sounds.xls")
