@@ -5,13 +5,13 @@ import numpy as np
 from scipy.signal import stft
 
 # COLD_THRESH = 0.0001
-jump_size = 1
+jump_size = 2
 potential_bits = []
 for i in range(0,205,jump_size):
     potential_bits.append(i)
 print("potential bits:", potential_bits)
 # potential_bits = [150, 155, 160, 165, 170, 175, 180, 185, 190, 195]
-THRESH = 0.5
+THRESH = 0.00000000000000000001
 
 def get_info(path, is_acce=False):
     axises = ['x', 'y', 'z']
@@ -140,5 +140,4 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-extract_data("exp_data/152.xls", axis="y")
-print(151.77326587 - 153.32197266)
+extract_data("exp_data/JBL_150_152_154.xls")
