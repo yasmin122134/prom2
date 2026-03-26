@@ -5,13 +5,13 @@ import numpy as np
 from scipy.signal import stft
 
 # COLD_THRESH = 0.0001
-jump_size = 2
+jump_size = 5
 potential_bits = []
 for i in range(0,205,jump_size):
     potential_bits.append(i)
 print("potential bits:", potential_bits)
 # potential_bits = [150, 155, 160, 165, 170, 175, 180, 185, 190, 195]
-THRESH = 0.00000000000000000001
+THRESH = 2.5
 
 def get_info(path, is_acce=False):
     axises = ['x', 'y', 'z']
@@ -64,8 +64,25 @@ def calc_FFT(time, moveX, message):
     plt.show()
 
     SAMPLE_RATE = round(SAMPLE_RATE)
-    f, t, Zxx = stft(moveX, fs=SAMPLE_RATE, nperseg=SAMPLE_RATE)
-    print("Zxx size\n",np.size(Zxx), "\n")
+    f, t, Zxx = stft(moveX, fs=SAMPLE_RATE, nperseg=SAMPLE_RATE, window='hann')
+    print("Zxx size\n",np.shape(Zxx), "\n")
+    abss = np.abs(Zxx[150])
+    print(abss)
+    sorted = np.sort(abss)
+    print("max value:", np.max(abss))
+    print("min value:", np.min(abss))
+    a = (np.max(abss) - np.min(abss))/3
+    b = a * 2
+    c = a * 3
+    for i in range(np.size(abss)):
+        if abss[i] < a:
+            Zxx[150][i] = 0
+        if b > abss[i] > a:
+            Zxx[150][i] = 0.5
+        if abss[i] > b:
+            Zxx[150][i] = 1
+    print("devided by 3: ", a)
+    print("\n sorted: \n",sorted)
     print(f)
     plt.pcolormesh(t, f, np.abs(Zxx), shading='gouraud')
     plt.ylabel('Hz')
@@ -95,10 +112,10 @@ def find_hot(abs_arr,cold_thresh, window=5):
     return hot
 
 
-def find_hot2(abs_arr,cold_thresh):
+def find_hot2(abs_avg_arr, cold_thresh):
     hot = []
-    for j in range(0, np.shape(abs_arr)[0]):
-        a = abs_arr[j]
+    for j in range(0, np.shape(abs_avg_arr)[0]):
+        a = abs_avg_arr[j]
         if a >= cold_thresh:
             hot.append(j)
     return hot
@@ -110,10 +127,10 @@ def get_bits(f, t, Zxx):
     abs_arr = np.abs(Zxx)
     avg_abs_arr = np.mean(abs_arr,axis=1)
     cold_thresh = find_threshold(avg_abs_arr)
-    hot = find_hot2(avg_abs_arr, cold_thresh)
-    print("hot frequencies:", hot, "\n")
+    hot_ind = find_hot2(avg_abs_arr, cold_thresh)
+    print("hot frequencies:", hot_ind, "\n")
     for bit in potential_bits:
-        for h in hot:
+        for h in hot_ind:
             if np.abs(f[h] - bit) <= THRESH:
                 found_bits.append(bit)
                 break
@@ -140,4 +157,5 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-extract_data("exp_data/JBL_150_152_154.xls")
+# get_info("exp_data/changing_amp.csv")
+extract_data("exp_data/changing_amp.csv", axis='y')

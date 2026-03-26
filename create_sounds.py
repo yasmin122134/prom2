@@ -1,28 +1,33 @@
 import numpy as np
 import sounddevice as sd
+import soundfile as sf
+import threading
 
-def white_noise(
-        duration: float=1.0,
-        amplitude: float=0.5,
-        sample_rate: int=44100,
-) -> np.ndarray:
-    n_samples = int(duration * sample_rate)
-    noise = np.random.uniform(-1,1, n_samples)
-    noise *= amplitude
-    return noise
+def _play_array(sound, samplerate=44100):
+    sound = np.asarray(sound, dtype=np.float32)
+    sd.play(sound, samplerate)
+    sd.wait()
+
+
+def _playsound(sound, samplerate=44100):
+    new_thread = threading.Thread(target=_play_array, args=(sound, samplerate))
+    new_thread.start()
+    return new_thread
+
+
 
 
 def main():
-    mysound = white_noise()
-    sd.play(mysound, 44100)
-    sd.wait(1)
-    my_modulator = sine_tone(400,3)
-    sd.play(my_modulator)
-    sd.wait()
-    am_sound = am_synthesis(440, my_modulator)
-    print(am_sound)
-    sd.play(am_sound)
-    sd.wait()
+    tone = sine_tone(300, 2)
+    t1 = _playsound(tone)
+
+    my_modulator = sine_tone(150, 3)
+    am_sound = am_synthesis(150, my_modulator)
+    t2 = _playsound(am_sound)
+
+    t1.join()
+    t2.join()
+
 
 def sine_tone(
         frequency: int=440,
@@ -51,5 +56,34 @@ def am_synthesis(
     am_wave = amplitude * (am_wave / max_amplitude)
     return am_wave
 
+def transfer():
+    duration = 3
+    freq_amp_by_time_segment = [{
+            100 : 0,
+            110 : 1
+        },
+        {
+            100: 1,
+            110: 1
+        },
+        {
+            150: 1,
+            110: 0
+        },
+    ]
+    to_play = []
+    for t in freq_amp_by_time_segment:
+        for k, v in t.items():
+            sine = sine_tone(k,duration,v)
+            to_play.append(_playsound(sine))
+        for th in to_play:
+            th.join()
+        to_play = []
+
+
+
+
+
+
 if __name__ == "__main__":
-    main()
+    transfer()
