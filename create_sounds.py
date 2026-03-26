@@ -3,7 +3,7 @@ import numpy as np
 import sounddevice as sd
 import soundfile as sf
 import threading
-
+from scipy.signal import butter,filtfilt
 from scipy.signal import hilbert
 
 
@@ -19,7 +19,7 @@ def _playsound(sound, samplerate=44100):
     return new_thread
 
 
-data_freq = 3
+data_freq = 5
 data_amp = 1.0
 
 base_freq = 10
@@ -27,18 +27,19 @@ base_amp = 1.0
 
 duration = 3
 def main():
-    my_modulation = sine_tone(data_freq, duration)
-    am_sound = am_synthesis(base_freq,base_amp, my_modulation,modulation_index=1)
-    d = am_demodulate(am_sound,base_freq,base_amp,duration)
+    original_sound = sine_tone(data_freq, duration)
+    am_sound = am_synthesis(base_freq, original_sound,modulation_index=1)
+    demodulate = am_demodulate(am_sound,modulation_index=1)
 
-
-    plot_sound(my_modulation, duration, title="my modulation")
+    plot_sound(original_sound, duration, title="original sound")
     plot_sound(am_sound, duration, title="am sound")
-    plot_sound(d, 5, title="demodulation")
-    t2 = _playsound(am_sound)
+    plot_sound(demodulate, duration, title="demodulation")
+
+    t1 = _playsound(am_sound)
+    t2 = _playsound(demodulate)
 
 
-    # t1.join()
+    t1.join()
     t2.join()
 
 
@@ -56,25 +57,21 @@ def sine_tone(
 
 def am_synthesis(
         carrier_frequency: float,
-        carrier_amplitude: float,
         modulator_wave: np.array,
-        modulation_index: float=0.5,
-        amplitude: float=0.5,
+        modulation_index: float=1,
         sample_rate: int=44100,
 ) -> np.ndarray:
     total_samples = len(modulator_wave)
     time_points = np.arange(total_samples) / sample_rate
-    carrier_wave = np.sin(2 * np.pi * carrier_frequency * time_points) * carrier_amplitude
+    carrier_wave = np.sin(2 * np.pi * carrier_frequency * time_points)
     am_wave = (1+modulation_index * modulator_wave) * carrier_wave
-    max_amplitude = np.max(np.abs(am_wave))
-    am_wave = amplitude * (am_wave / max_amplitude)
     return am_wave
 
-from scipy.signal import butter,filtfilt
-def am_demodulate(sig_am, carrier_frequency, carrier_amp, duration, sample_rate=44100):
-    b, a = butter(len(sig_am), 2 / (sample_rate * 0.5), btype='low', analog=False)
-    demodulated_signal = filtfilt(b, a, sig_am)
-    return demodulated_signal
+
+def am_demodulate(sig_am, modulation_index):
+    wave_without_carrier = np.abs(hilbert(sig_am))
+    result = (wave_without_carrier-1)/modulation_index
+    return result
 
 
 def fm_synthesis(

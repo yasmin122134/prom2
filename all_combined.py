@@ -24,7 +24,7 @@ potential_bits = list(range(0, 205, jump_size))
 THRESH = 1.5
 
 
-def find_threshold(arr, percentile = 95):
+def find_threshold(arr, percentile = 90):
     return np.percentile(arr, percentile)
     # max_val = np.max(arr)
     # min_val = np.min(arr)
@@ -47,7 +47,7 @@ def get_bits(f, t, Zxx):
     cold_thresh = find_threshold(avg_abs_arr)
     hot = find_hot2(avg_abs_arr, cold_thresh)
 
-    print("hottest: \n" , hot, "\n")
+    # print("hottest: \n" , hot, "\n")
     for bit in potential_bits:
         for h in hot:
             if np.abs(f[h] - bit) <= THRESH:
