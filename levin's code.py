@@ -34,10 +34,10 @@ def extract_data(path, is_acce=False, axis='x'):
         df = pd.read_excel(path)
 
     if is_acce:
-        moveX = df[f'Linear Acceleration {axis} (m/s^2)'].tolist()[500:-500]
+        moveX = df[f'Linear Acceleration {axis} (m/s^2)'].tolist()
     else:
-        moveX = df[f'Gyroscope {axis} (rad/s)'].tolist()[500:-500]
-    time = df['Time (s)'].tolist()[500:-500]
+        moveX = df[f'Gyroscope {axis} (rad/s)'].tolist()
+    time = df['Time (s)'].tolist()
     message = f'{path}, FFT, axis={axis}'
     f, t, Zxx = calc_FFT(time, moveX,message)
     return get_bits(f, t, Zxx)
@@ -74,13 +74,13 @@ def calc_FFT(time, moveX, message):
     a = (np.max(abss) - np.min(abss))/3
     b = a * 2
     c = a * 3
-    for i in range(np.size(abss)):
-        if abss[i] < a:
-            Zxx[150][i] = 0
-        if b > abss[i] > a:
-            Zxx[150][i] = 0.5
-        if abss[i] > b:
-            Zxx[150][i] = 1
+    # for i in range(np.size(abss)):
+    #     if abss[i] < a:
+    #         Zxx[150][i] = 0
+    #     if b > abss[i] > a:
+    #         Zxx[150][i] = 0.5
+    #     if abss[i] > b:
+    #         Zxx[150][i] = 1
     print("devided by 3: ", a)
     print("\n sorted: \n",sorted)
     print(f)
@@ -158,4 +158,4 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
 # get_info("exp_data/changing_amp.csv")
-extract_data("exp_data/changing_amp.csv", axis='y')
+get_info("exp_data/tran6.xls")
