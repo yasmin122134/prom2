@@ -11,7 +11,7 @@ for i in range(0,205,jump_size):
     potential_bits.append(i)
 print("potential bits:", potential_bits)
 # potential_bits = [150, 155, 160, 165, 170, 175, 180, 185, 190, 195]
-THRESH = 0.00000000000000000001
+THRESH = 0.01
 
 def get_info(path, is_acce=False):
     axises = ['x', 'y', 'z']
@@ -21,7 +21,7 @@ def get_info(path, is_acce=False):
         for bit in cur_bits:
             if bit not in bits:
                 bits.append(bit)
-    print("the bits detedted are: ", bits)
+    print("the bits detected are: ", bits)
     return bits
 
 
@@ -106,6 +106,9 @@ def find_hot2(abs_arr,cold_thresh):
 
 def get_bits(f, t, Zxx):
     found_bits = []
+    # print(f)
+    # print(t)
+    # print(Zxx)
     # hot columns
     abs_arr = np.abs(Zxx)
     avg_abs_arr = np.mean(abs_arr,axis=1)
@@ -120,9 +123,6 @@ def get_bits(f, t, Zxx):
 
     print(found_bits)
     return found_bits
-
-
-
 
 
 # get_info("exp_data/no_sound_1.csv")
@@ -140,4 +140,4 @@ def get_bits(f, t, Zxx):
 # get_info("exp_data/sound_170_150.csv")
 # get_info("exp_data/no_case_170_150.csv")
 # get_info("exp_data/sound_150_second.xls",axis="z")
-extract_data("exp_data/JBL_150_152_154.xls")
+get_info("exp_data/speech2.xls")
