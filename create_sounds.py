@@ -19,13 +19,13 @@ def _playsound(sound, samplerate=44100):
     return new_thread
 
 
-data_freq = 5
+data_freq = 100
 data_amp = 1.0
 
-base_freq = 10
+base_freq = 150
 base_amp = 1.0
 
-duration = 3
+duration = 10
 def main():
     original_sound = sine_tone(data_freq, duration)
     am_sound = am_synthesis(base_freq, original_sound,modulation_index=1)
@@ -35,12 +35,12 @@ def main():
     plot_sound(am_sound, duration, title="am sound")
     plot_sound(demodulate, duration, title="demodulation")
 
-    t1 = _playsound(am_sound)
-    t2 = _playsound(demodulate)
+    # t1 = _playsound(am_sound)
+    # t2 = _playsound(demodulate)
 
 
-    t1.join()
-    t2.join()
+    # t1.join()
+    # t2.join()
 
 
 def sine_tone(
