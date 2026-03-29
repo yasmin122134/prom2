@@ -129,10 +129,13 @@ def transfer(freq_amp_by_time_segment):
 
 if __name__ == "__main__":
     # main()
-    N, T = 100000, 0.01  # number of samples and sampling interval for 10 s signal
-    t = np.arange(N) * T  # timestamps
+    duration = 2
+    samplerate = 44100
+    n_samples = int(samplerate * duration)
+    print("n samples: ", n_samples)
+    t = np.linspace(0, duration, n_samples)
 
-    x_lin = chirp(t, f0=6, f1=1, t1=10, method='linear')
+    x_lin = chirp(t, f0=100, f1=150, t1=1, method='linear')
     print(x_lin)
     sd.play(x_lin)
     sd.wait()
