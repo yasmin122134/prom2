@@ -116,6 +116,8 @@ def transfer(freq_amp_by_time_segment):
     for t in freq_amp_by_time_segment:
         for k, v in t.items():
             sine = sine_tone(k,duration,v)
+            # sine2 = sine_tone(180,duration,v)
+            # sine3 = sine_tone(170, duration, v)
             to_play.append(_playsound(sine))
         for th in to_play:
             th.join()
@@ -128,35 +130,10 @@ def transfer(freq_amp_by_time_segment):
 
 if __name__ == "__main__":
     # main()
-    freq_amp_by_time_segment = [{
-        150: 1,
-    },
+    freq_amp_by_time_segment = [
         {
-            150: 0.9,
-        },
-        {
-            150: 0.8
-        },
-        {
-            150: 0.7
-        },
-        {
-            150: 0.6
-        },
-        {
-            150: 0.5
-        },
-        {
-            150: 0.4
-        },
-        {
-            150: 0.3
-        },
-        {
-            150: 0.2
-        },
-        {
-            150: 0.1
+            21100:1
         },
     ]
+
     transfer(freq_amp_by_time_segment)
