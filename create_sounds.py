@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.signal
 import sounddevice as sd
 import soundfile as sf
 import threading
 from scipy.signal import butter,filtfilt
-from scipy.signal import hilbert
+from scipy.signal import hilbert, chirp
 
 
 def _play_array(sound, samplerate=44100):
@@ -35,12 +36,12 @@ def main():
     plot_sound(am_sound, duration, title="am sound")
     plot_sound(demodulate, duration, title="demodulation")
 
-    # t1 = _playsound(am_sound)
-    # t2 = _playsound(demodulate)
+    t1 = _playsound(am_sound)
+    t2 = _playsound(demodulate)
 
 
-    # t1.join()
-    # t2.join()
+    t1.join()
+    t2.join()
 
 
 def sine_tone(
@@ -116,8 +117,6 @@ def transfer(freq_amp_by_time_segment):
     for t in freq_amp_by_time_segment:
         for k, v in t.items():
             sine = sine_tone(k,duration,v)
-            # sine2 = sine_tone(180,duration,v)
-            # sine3 = sine_tone(170, duration, v)
             to_play.append(_playsound(sine))
         for th in to_play:
             th.join()
@@ -130,10 +129,31 @@ def transfer(freq_amp_by_time_segment):
 
 if __name__ == "__main__":
     # main()
-    freq_amp_by_time_segment = [
-        {
-            21100:1
-        },
-    ]
+    N, T = 100000, 0.01  # number of samples and sampling interval for 10 s signal
+    t = np.arange(N) * T  # timestamps
 
-    transfer(freq_amp_by_time_segment)
+    x_lin = chirp(t, f0=6, f1=1, t1=10, method='linear')
+    print(x_lin)
+    sd.play(x_lin)
+    sd.wait()
+
+    fg0, ax0 = plt.subplots()
+    ax0.set_title(r"Linear Chirp from $f(0)=6\,$Hz to $f(10)=1\,$Hz")
+    ax0.set(xlabel="Time $t$ in Seconds", ylabel=r"Amplitude $x_\text{lin}(t)$")
+    ax0.plot(t, x_lin)
+    plt.show()
+
+    # freq_amp_by_time_segment = [{
+    #     150: 0.5,
+    # },
+    #     {
+    #         150: 0,
+    #     },
+    #     {
+    #         150: 1,
+    #     },
+    #     {
+    #         150: 0,
+    #     },
+    # ]
+    # transfer(freq_amp_by_time_segment)
