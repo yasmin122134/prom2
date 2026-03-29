@@ -4,13 +4,14 @@ import numpy as np
 from scipy.signal import stft
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore
+from scipy.signal import find_peaks
 
 # ==========================================
 # CONFIGURATION
 # ==========================================
 TARGET_AXIS = 'x'
 MAX_BUFFER_SIZE = 4000  # Memory: Keep the last ~10 seconds of data for the UI
-UPDATE_BATCH_SIZE = 400  # Analysis & UI Refresh: Process newest ~1 second of data
+UPDATE_BATCH_SIZE = 417  # Analysis & UI Refresh: Process newest ~1 second of data
 
 AXIS_MAP = {'x': 1, 'y': 2, 'z': 3}
 TARGET_IDX = AXIS_MAP[TARGET_AXIS.lower()]
@@ -32,28 +33,47 @@ def find_threshold(arr, percentile = 90):
 
 
 def find_hot2(abs_arr, cold_thresh):
-    hot = []
-    for j in range(0, np.shape(abs_arr)[0]):
-        if abs_arr[j] >= cold_thresh:
-            hot.append(j)
-    return hot
+    peaks_indices,_ = find_peaks(abs_arr, height=cold_thresh, prominence=cold_thresh * 1.5)
+    return peaks_indices.tolist()
 
+prev_phase = 0
 
 def get_bits(f, t, Zxx):
+    global prev_phase
     found_bits = []
     abs_arr = np.abs(Zxx)
     avg_abs_arr = np.mean(abs_arr, axis=1)
 
+    # max_index = 0
+    # for i in range(len(avg_abs_arr)):
+    #     if avg_abs_arr[i] > avg_abs_arr[max_index]:
+    #         max_index = i
+    #
+    # print("Max:", f[max_index] , "value: ", avg_abs_arr[max_index])
+
     cold_thresh = find_threshold(avg_abs_arr)
     hot = find_hot2(avg_abs_arr, cold_thresh)
 
+    for item in hot:
+        amplitude = avg_abs_arr[item]
+        curr_phase = np.angle(Zxx[item][1])
+        freq = f[item]
+
+        rad_delta_phase = (curr_phase - prev_phase) % (2 * np.pi)
+        print("\nfrequency:", freq, "amplitude:", amplitude, "phase:", curr_phase, "diff_phase",
+              rad_delta_phase)
+
+        prev_phase = curr_phase
+
     # print("hottest: \n" , hot, "\n")
-    for bit in potential_bits:
-        for h in hot:
-            if np.abs(f[h] - bit) <= THRESH:
-                found_bits.append(bit)
-                break
-    return found_bits
+    # for bit in potential_bits:
+    #     # if bit == 150:
+    #     #     print("\n Average:", np.mean(Zxx[bit]), "values: ", Zxx[bit])
+    #     for h in hot:
+    #         if np.abs(f[h] - bit) <= THRESH:
+    #             found_bits.append(bit)
+    #             break
+    # return found_bits
 
 
 # ==========================================
@@ -86,7 +106,7 @@ def process_window(full_time, full_move, new_time, new_move, img_item):
             bits = get_bits(f_new, t_new, Zxx_new)
 
             # Print the result for the current ~1s window
-            print(f"[{time.strftime('%H:%M:%S')}] Bits in new {chunk_duration:.2f}s chunk: {bits}")
+            # print(f"[{time.strftime('%H:%M:%S')}] Bits in new {chunk_duration:.2f}s chunk: {bits}")
 
 
 def main():
