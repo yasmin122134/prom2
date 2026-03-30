@@ -20,7 +20,7 @@ def detect_chirp(xls_path, axis="x", duration=1.0, f0=160, f1=185):
     received_freq, received_time, received_zxx = stft(x, fs=sample_rate,nperseg=256 ,noverlap=192)
     received_abs = np.abs(received_zxx)
 
-    # build chirp template
+    # build chirp template - LEVIN THIS IS THE IMPORTANT PART TO TWEEK WITH AND TRY NEW MORE COMPLEX SEQUENCES
     n = int(duration * sample_rate)
     times = np.arange(n) / sample_rate
     chirp_template = chirp(times, f0=f0, f1=f1, t1=duration, method="linear")
@@ -85,4 +85,4 @@ def detect_chirp(xls_path, axis="x", duration=1.0, f0=160, f1=185):
 
     return detected_time, scores
 
-detect_chirp("exp_data/chirp3.xls", axis="y", duration=2.0, f0=140, f1=190)
+detect_chirp("exp_data/chirp3.xls", axis="y", duration=2.0, f0=160, f1=185)
