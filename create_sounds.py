@@ -135,10 +135,12 @@ if __name__ == "__main__":
     print("n samples: ", n_samples)
     t = np.linspace(0, duration, n_samples)
 
-    x_lin = chirp(t, f0=100, f1=150, t1=1, method='linear')
+    x_lin = chirp(t, f0=160, f1=185, t1=duration, method='linear')
     print(x_lin)
-    sd.play(x_lin)
-    sd.wait()
+    while True:
+        sd.play(x_lin)
+        sd.wait()
+
 
     fg0, ax0 = plt.subplots()
     ax0.set_title(r"Linear Chirp from $f(0)=6\,$Hz to $f(10)=1\,$Hz")
